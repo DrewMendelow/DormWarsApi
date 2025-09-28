@@ -1,0 +1,2 @@
+#To rerun api#
+./mvnw spring-boot:run
