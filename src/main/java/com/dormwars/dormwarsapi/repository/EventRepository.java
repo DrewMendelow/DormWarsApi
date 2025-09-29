@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findBySportId(Long schoolId);
+    List<Event> findBySport_SportId(Long schoolId);
 }

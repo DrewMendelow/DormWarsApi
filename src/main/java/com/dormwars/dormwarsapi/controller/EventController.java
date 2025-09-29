@@ -49,7 +49,8 @@ public class EventController {
             existing.setLoser(in.getLoser());
             existing.setTournament(in.getTournament());
             existing.setRoundNumber(in.getRoundNumber());
-            existing.setNextEvent(in.getNextEvent());
+            existing.setNextEventId(in.getNextEventId());
+            existing.setEventName(in.getEventName());
             repo.save(existing);
             return ResponseEntity.ok(existing);
         }).orElse(ResponseEntity.notFound().build());

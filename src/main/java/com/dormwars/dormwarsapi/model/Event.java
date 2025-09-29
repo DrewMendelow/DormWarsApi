@@ -38,9 +38,11 @@ public class Event {
 
     private Integer roundNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "next_event_id")
-    private Event nextEvent;
+    // @ManyToOne
+    // @JoinColumn(name = "next_event_id")
+    private Long nextEventId;
+
+    private String eventName;
 
     public Long getEventId() { return eventId; }
     public void setEventId(Long eventId) { this.eventId = eventId; }
@@ -66,6 +68,8 @@ public class Event {
     public void setTournament(Tournament tournament) { this.tournament = tournament; }
     public Integer getRoundNumber() { return roundNumber; }
     public void setRoundNumber(Integer roundNumber) { this.roundNumber = roundNumber; }
-    public Event getNextEvent() { return nextEvent; }
-    public void setNextEvent(Event nextEvent) { this.nextEvent = nextEvent; }
+    public Long getNextEventId() { return nextEventId; }
+    public void setNextEventId(Long nextEventId) { this.nextEventId = nextEventId; }
+    public String getEventName() { return eventName; }
+    public void setEventName(String eventName) { this.eventName = eventName; }
 }
