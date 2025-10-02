@@ -39,6 +39,7 @@ public class TournamentController {
         t.setSport(s.get());
         t.setMaxTeams(r.getMaxTeams());
         t.setNumberOfRounds(r.getNumberOfRounds());
+        t.setTournamentName(r.getTournamentName());
 
         if (r.getWinnerId() != null) {
             Optional<EventTeam> w = eventTeamRepo.findById(r.getWinnerId());
@@ -60,6 +61,7 @@ public class TournamentController {
             }
             if (r.getMaxTeams() != null) existing.setMaxTeams(r.getMaxTeams());
             if (r.getNumberOfRounds() != null) existing.setNumberOfRounds(r.getNumberOfRounds());
+            if (r.getTournamentName() != null) existing.setTournamentName(r.getTournamentName());
 
             if (r.getWinnerId() != null) {
                 Optional<EventTeam> w = eventTeamRepo.findById(r.getWinnerId());

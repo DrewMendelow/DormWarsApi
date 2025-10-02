@@ -5,6 +5,7 @@ public class TournamentRequest {
     private Long winnerId;
     private Integer maxTeams;
     private Integer numberOfRounds;
+    private String tournamentName;
 
     public Long getSportId() { return sportId; }
     public void setSportId(Long sportId) { this.sportId = sportId; }
@@ -14,4 +15,6 @@ public class TournamentRequest {
     public void setMaxTeams(Integer maxTeams) { this.maxTeams = maxTeams; }
     public Integer getNumberOfRounds() { return numberOfRounds; }
     public void setNumberOfRounds(Integer numberOfRounds) { this.numberOfRounds = numberOfRounds; }
+    public String getTournamentName() { return tournamentName; }
+    public void setTournamentName(String tournamentName) { this.tournamentName = tournamentName; }
 }

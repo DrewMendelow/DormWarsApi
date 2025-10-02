@@ -20,6 +20,7 @@ public class Tournament {
 
     private Integer maxTeams;
     private Integer numberOfRounds;
+    private String tournamentName;
 
     public Long getTournamentId() { return tournamentId; }
     public void setTournamentId(Long tournamentId) { this.tournamentId = tournamentId; }
@@ -31,4 +32,6 @@ public class Tournament {
     public void setMaxTeams(Integer maxTeams) { this.maxTeams = maxTeams; }
     public Integer getNumberOfRounds() { return numberOfRounds; }
     public void setNumberOfRounds(Integer numberOfRounds) { this.numberOfRounds = numberOfRounds; }
+    public String getTournamentName() { return tournamentName; }
+    public void setTournamentName(String tournamentName) { this.tournamentName = tournamentName; }
 }
