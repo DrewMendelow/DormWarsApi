@@ -1,6 +1,7 @@
 package com.dormwars.dormwarsapi.controller;
 
 import com.dormwars.dormwarsapi.model.Team;
+import com.dormwars.dormwarsapi.model.TeamRequest;
 import com.dormwars.dormwarsapi.model.School;
 import com.dormwars.dormwarsapi.repository.TeamRepository;
 import com.dormwars.dormwarsapi.repository.SchoolRepository;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/teams")
@@ -25,23 +27,35 @@ public class TeamController {
     public ResponseEntity<Team> get(@PathVariable Long id) { return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build()); }
 
     @PostMapping
-    public Team create(@RequestBody Team team) {
-        if (team.getSchool() != null && team.getSchool().getSchoolId() != null) {
-            School s = schoolRepo.findById(team.getSchool().getSchoolId()).orElse(null);
-            team.setSchool(s);
+    public ResponseEntity<?> create(@RequestBody TeamRequest r) {
+        Team team = new Team();
+        team.setTeamName(r.getTeamName());
+        team.setActive(r.getActive() != null ? r.getActive() : true);
+
+        if (r.getSchoolId() != null) {
+            Optional<School> s = schoolRepo.findById(r.getSchoolId());
+            if (s.isEmpty()) return ResponseEntity.status(404).body("school not found");
+            team.setSchool(s.get());
+        } else {
+            team.setSchool(null);
         }
-        return repo.save(team);
+
+        Team saved = repo.save(team);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Team> update(@PathVariable Long id, @RequestBody Team in) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TeamRequest r) {
         return repo.findById(id).map(existing -> {
-            existing.setTeamName(in.getTeamName());
-            if (in.getSchool() != null && in.getSchool().getSchoolId() != null) {
-                School s = schoolRepo.findById(in.getSchool().getSchoolId()).orElse(null);
-                existing.setSchool(s);
+            if (r.getTeamName() != null) existing.setTeamName(r.getTeamName());
+            if (r.getActive() != null) existing.setActive(r.getActive());
+
+            if (r.getSchoolId() != null) {
+                Optional<School> s = schoolRepo.findById(r.getSchoolId());
+                if (s.isEmpty()) return ResponseEntity.status(404).body("school not found");
+                existing.setSchool(s.get());
             }
-            existing.setActive(in.getActive());
+
             repo.save(existing);
             return ResponseEntity.ok(existing);
         }).orElse(ResponseEntity.notFound().build());

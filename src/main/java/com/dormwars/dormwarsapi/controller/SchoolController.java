@@ -1,6 +1,7 @@
 package com.dormwars.dormwarsapi.controller;
 
 import com.dormwars.dormwarsapi.model.School;
+import com.dormwars.dormwarsapi.model.SchoolRequest;
 import com.dormwars.dormwarsapi.repository.SchoolRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,18 +25,29 @@ public class SchoolController {
     }
 
     @PostMapping
-    public School create(@RequestBody School school) { return repo.save(school); }
+    public ResponseEntity<?> create(@RequestBody SchoolRequest r) {
+        School s = new School();
+        s.setSchoolName(r.getSchoolName());
+        s.setCity(r.getCity());
+        s.setState(r.getState());
+        s.setPrimaryColor(r.getPrimaryColor());
+        s.setSecondaryColor(r.getSecondaryColor());
+        s.setSchoolLogo(r.getSchoolLogo());
+        s.setActive(r.getActive() != null ? r.getActive() : true);
+        School saved = repo.save(s);
+        return ResponseEntity.ok(saved);
+    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<School> update(@PathVariable Long id, @RequestBody School in) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody SchoolRequest r) {
         return repo.findById(id).map(existing -> {
-            existing.setSchoolName(in.getSchoolName());
-            existing.setCity(in.getCity());
-            existing.setState(in.getState());
-            existing.setPrimaryColor(in.getPrimaryColor());
-            existing.setSecondaryColor(in.getSecondaryColor());
-            existing.setSchoolLogo(in.getSchoolLogo());
-            existing.setActive(in.getActive());
+            if (r.getSchoolName() != null) existing.setSchoolName(r.getSchoolName());
+            if (r.getCity() != null) existing.setCity(r.getCity());
+            if (r.getState() != null) existing.setState(r.getState());
+            if (r.getPrimaryColor() != null) existing.setPrimaryColor(r.getPrimaryColor());
+            if (r.getSecondaryColor() != null) existing.setSecondaryColor(r.getSecondaryColor());
+            if (r.getSchoolLogo() != null) existing.setSchoolLogo(r.getSchoolLogo());
+            if (r.getActive() != null) existing.setActive(r.getActive());
             repo.save(existing);
             return ResponseEntity.ok(existing);
         }).orElse(ResponseEntity.notFound().build());
@@ -43,9 +55,6 @@ public class SchoolController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return repo.findById(id).map(existing -> {
-            repo.delete(existing);
-            return ResponseEntity.noContent().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+        return repo.findById(id).map(existing -> { repo.delete(existing); return ResponseEntity.noContent().<Void>build(); }).orElse(ResponseEntity.notFound().build());
     }
 }

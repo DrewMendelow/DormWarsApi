@@ -1,6 +1,7 @@
 package com.dormwars.dormwarsapi.controller;
 
 import com.dormwars.dormwarsapi.model.User;
+import com.dormwars.dormwarsapi.model.UserRequest;
 import com.dormwars.dormwarsapi.model.School;
 import com.dormwars.dormwarsapi.repository.UserRepository;
 import com.dormwars.dormwarsapi.repository.SchoolRepository;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,28 +29,43 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        if (user.getSchool() != null && user.getSchool().getSchoolId() != null) {
-            School s = schoolRepo.findById(user.getSchool().getSchoolId()).orElse(null);
-            user.setSchool(s);
+    public ResponseEntity<?> create(@RequestBody UserRequest r) {
+        User user = new User();
+        user.setFirstName(r.getFirstName());
+        user.setLastName(r.getLastName());
+        user.setEmail(r.getEmail());
+        user.setPhoneNumber(r.getPhoneNumber());
+        user.setUserType(r.getUserType());
+
+        if (r.getSchoolId() != null) {
+            Optional<School> s = schoolRepo.findById(r.getSchoolId());
+            if (s.isEmpty()) return ResponseEntity.status(404).body("school not found");
+            user.setSchool(s.get());
+        } else {
+            user.setSchool(null);
         }
-        return repo.save(user);
+
+        User saved = repo.save(user);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User in) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UserRequest r) {
         return repo.findById(id).map(existing -> {
-            existing.setFirstName(in.getFirstName());
-            existing.setLastName(in.getLastName());
-            existing.setEmail(in.getEmail());
-            existing.setPhoneNumber(in.getPhoneNumber());
-            existing.setUserType(in.getUserType());
-            if (in.getSchool() != null && in.getSchool().getSchoolId() != null) {
-                School s = schoolRepo.findById(in.getSchool().getSchoolId()).orElse(null);
-                existing.setSchool(s);
-            } else {
-                existing.setSchool(null);
+            if (r.getFirstName() != null) existing.setFirstName(r.getFirstName());
+            if (r.getLastName() != null) existing.setLastName(r.getLastName());
+            if (r.getEmail() != null) existing.setEmail(r.getEmail());
+            if (r.getPhoneNumber() != null) existing.setPhoneNumber(r.getPhoneNumber());
+            if (r.getUserType() != null) existing.setUserType(r.getUserType());
+
+            if (r.getSchoolId() != null) {
+                Optional<School> s = schoolRepo.findById(r.getSchoolId());
+                if (s.isEmpty()) return ResponseEntity.status(404).body("school not found");
+                existing.setSchool(s.get());
+            } else if (r.getSchoolId() == null) {
+                // leave as-is when not provided
             }
+
             repo.save(existing);
             return ResponseEntity.ok(existing);
         }).orElse(ResponseEntity.notFound().build());
